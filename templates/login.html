@@ -1,14 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Login - Sistema de Activos</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: white;
+            padding: 50px;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .login-container h2 {
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #34495e;
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            font-size: 12px;
+            color: gray;
+        }
+    </style>
 </head>
 <body>
-    <h2>Inicio de Sesión</h2>
-    <form action="/validar" method="POST">
-        <input type="text" name="usuario" placeholder="Usuario" required><br><br>
-        <input type="password" name="clave" placeholder="Contraseña" required><br><br>
-        <button type="submit">Ingresar</button>
-    </form>
+
+    <div class="login-container">
+        <h2>Sistema de Gestión de Activos</h2>
+
+        <form action="/validar" method="POST">
+
+            <div class="input-group">
+                <label>Usuario</label>
+                <input type="text" name="usuario" required>
+            </div>
+
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" name="clave" required>
+            </div>
+
+            <button class="login-btn" type="submit">
+                Ingresar
+            </button>
+
+        </form>
+
+        <div class="footer-text">
+            © 2026 - Proyecto Universitario
+        </div>
+    </div>
+
 </body>
 </html>

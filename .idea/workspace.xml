@@ -5,30 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e8f41bd-5a45-4a1f-9434-bb8d60a4fb5d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/controllers/auth_controller.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/consulta.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/depuracion.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/informes.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/ingreso.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/salida.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/visitantes.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/consulta_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/depuracion_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/index_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/informes_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/ingreso_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/login_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/salida_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/visitantes_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/activos_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/activos_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/login_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/reporte_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
