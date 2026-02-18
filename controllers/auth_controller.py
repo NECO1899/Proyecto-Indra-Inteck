@@ -16,3 +16,8 @@ def validar():
         return redirect(url_for("activos.index"))
 
     return "Credenciales incorrectas"
+
+@auth_bp.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("auth.login"))

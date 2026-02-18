@@ -3,34 +3,61 @@
 <head>
     <title>Sistema Activos</title>
     <style>
-        body { margin: 0; font-family: Arial; }
+        body {
+        margin: 0;
+        font-family: Arial;
+    }
 
-        .navbar {
-            display: flex;
-            background-color: #2c3e50;
-        }
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #2c3e50;
+        padding: 0 40px;
+        height: 65px;
+    }
 
-        .navbar a {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
+    .menu {
+        display: flex;
+        gap: 40px;
+    }
 
-        .navbar a:hover {
-            background-color: #34495e;
-        }
+    .menu a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 10px 15px;
+        transition: 0.3s;
+    }
 
-        .contenido {
-            padding: 40px;
-        }
-    </style>
+    .menu a:hover {
+        background-color: #34495e;
+        border-radius: 5px;
+    }
+
+    .logout a {
+        background-color: #c0392b;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .logout a:hover {
+        background-color: #e74c3c;
+    }
+
+    .contenido {
+        padding: 40px;
+    }
+</style>
 </head>
 <body>
 
-    <div class="navbar">
+<div class="navbar">
+    <div class="menu">
         <a href="#">Ingreso Activos</a>
         <a href="#">Depuración</a>
         <a href="#">Salida Activos</a>
@@ -38,6 +65,11 @@
         <a href="#">Consulta</a>
         <a href="#">Informes</a>
     </div>
+
+    <div class="logout">
+        <a href="{{ url_for('auth.logout') }}">Salir</a>
+    </div>
+</div>
 
     <div class="contenido">
         <h2>Bienvenido al Sistema de Gestión de Activos</h2>
