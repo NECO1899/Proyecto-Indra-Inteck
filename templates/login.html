@@ -1,102 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Login - Sistema de Activos</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg, #2c3e50, #4ca1af);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIAC_VPN</title>
 
-        .login-container {
-            background: white;
-            padding: 50px;
-            width: 400px;
-            border-radius: 10px;
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-
-        .login-container h2 {
-            margin-bottom: 30px;
-            color: #2c3e50;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .input-group label {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .login-btn:hover {
-            background-color: #34495e;
-        }
-
-        .footer-text {
-            margin-top: 20px;
-            font-size: 12px;
-            color: gray;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="login-container">
-        <h2>Sistema de Gestión de Activos</h2>
+<div class="background-blur"></div>
 
-        <form action="/validar" method="POST">
+<div class="login-container">
 
-            <div class="input-group">
-                <label>Usuario</label>
+    <div class="logo">
+        SIAC_VPN
+    </div>
+
+    <h2>Sistema de Gestión de Activos</h2>
+
+    <form action="/validar" method="POST"> <!-- Corregir "{{ url_for('auth.validar') }}"-->
+
+        <div class="input-group">
+            <label>Usuario</label>
+            <div class="input-icon">
+                <i class="fas fa-user"></i>
                 <input type="text" name="usuario" required>
             </div>
+        </div>
 
-            <div class="input-group">
-                <label>Contraseña</label>
+        <div class="input-group">
+            <label>Contraseña</label>
+            <div class="input-icon">
+                <i class="fas fa-lock"></i>
                 <input type="password" name="clave" required>
             </div>
-
-            <button class="login-btn" type="submit">
-                Ingresar
-            </button>
-
-        </form>
-
-        <div class="footer-text">
-            © 2026 - Proyecto Universitario
         </div>
+
+        <button type="submit" class="btn-login">
+            Ingresar
+        </button>
+
+    </form>
+
+    <div class="footer">
+        © 2026 - Proyecto Universitario
     </div>
+
+</div>
 
 </body>
 </html>

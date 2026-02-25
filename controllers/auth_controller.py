@@ -12,7 +12,9 @@ def validar():
     clave = request.form["clave"]
 
     if usuario == "admin" and clave == "1234":
+        session.clear()
         session["usuario"] = usuario
+        session["rol"] = "admin"
         return redirect(url_for("activos.index"))
 
     return "Credenciales incorrectas"
