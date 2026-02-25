@@ -20,6 +20,16 @@
 
     <h2>Sistema de Gestión de Activos</h2>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alerta">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <form action="/validar" method="POST"> <!-- Corregir "{{ url_for('auth.validar') }}"-->
 
         <div class="input-group">

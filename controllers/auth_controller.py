@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -17,7 +17,8 @@ def validar():
         session["rol"] = "admin"
         return redirect(url_for("activos.index"))
 
-    return "Credenciales incorrectas"
+    flash("Usuario o contraseña incorrectos", "error")
+    return render_template("login.html")
 
 @auth_bp.route("/logout")
 def logout():

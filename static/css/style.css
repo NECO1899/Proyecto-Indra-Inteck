@@ -173,3 +173,13 @@ body {
         display: block;
     }
 }
+
+.alerta {
+    background: rgba(231, 76, 60, 0.15);
+    color: #c0392b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    text-align: center;
+}
