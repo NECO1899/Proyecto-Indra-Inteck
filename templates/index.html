@@ -33,8 +33,8 @@
 
         {% if session.get('rol') == 'admin' %}
         <div class="dropdown">
-            <button class="dropbtn">
-                Administrador <i class="fas fa-chevron-down"></i>
+            <a href="#" class="menu-link">
+                Administrador ▾
             </button>
             <div class="dropdown-content">
                 <a href="#">Usuarios</a>
@@ -54,10 +54,8 @@
             {{ session.get('usuario') }}
         </span>
 
-        <a href="{{ url_for('auth.logout') }}"
-           onclick="return confirm('¿Está seguro de cerrar sesión?')"
-           class="logout-btn">
-            <i class="fas fa-power-off"></i>
+        <a href="#" onclick="abrirModal()" class="logout-btn">
+           <i class="fas fa-power-off"></i>
         </a>
 
         <!-- HAMBURGUESA -->
@@ -67,11 +65,42 @@
 
     </div>
 
+    <div class="watermark">
+       SIAC_VPN 
+    </div>
+
 </header>
 
 <script>
 function toggleMenu() {
     document.getElementById("navLinks").classList.toggle("active");
+}
+</script>
+
+<div id="logoutModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>¿Cerrar sesión?</h3>
+        <p>Se cerrará tu sesión actual.</p>
+
+        <div class="modal-actions">
+            <button onclick="cerrarModal()" class="btn-cancelar">
+                Cancelar
+            </button>
+
+            <a href="{{ url_for('auth.logout') }}" class="btn-confirmar">
+                Cerrar sesión
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModal() {
+    document.getElementById("logoutModal").style.display = "flex";
+}
+
+function cerrarModal() {
+    document.getElementById("logoutModal").style.display = "none";
 }
 </script>
 
