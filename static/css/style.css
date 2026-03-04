@@ -384,3 +384,51 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
 }
+
+/* ===== TABLA SIAC ===== */
+
+.tabla-siac {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-siac th {
+    background: rgba(255,255,255,0.05);
+    color: #9fb3c8;
+    font-weight: 600;
+    padding: 10px;
+    font-size: 13px;
+    text-align: left;
+}
+
+.tabla-siac td {
+    padding: 10px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+    color: #e6f0ff;
+}
+
+.tabla-siac tr:hover {
+    background: rgba(0,234,255,0.05);
+}
+
+/* Botón eliminar individual */
+.btnDel {
+    background: #d63939;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btnDel:hover {
+    background: #ff4d4d;
+}
+
+.titulo-resultados {
+    margin: 0;
+    color: #9fb3c8;
+    font-weight: 600;
+}

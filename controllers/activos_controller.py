@@ -12,3 +12,7 @@ def index():
 @activos_bp.route("/ingreso")
 def ingreso_activos():
     return render_template("ingreso.html")
+
+@activos_bp.route('/depuracion')
+def depuracion():
+    return render_template('Depuracion.html')
