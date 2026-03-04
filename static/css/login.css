@@ -1,0 +1,148 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    overflow: hidden;
+}
+
+/* Capa blur decorativa */
+.background-blur {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: rgba(0, 234, 255, 0.2);
+    filter: blur(150px);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+    from { transform: translate(-50px, -50px); }
+    to { transform: translate(50px, 50px); }
+}
+
+/* ============================= */
+/* CONTENEDOR GLASS */
+/* ============================= */
+
+.login-container {
+    position: relative;
+    z-index: 10;
+    width: 380px;
+    padding: 40px;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================= */
+/* LOGO */
+/* ============================= */
+
+.logo {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+h2 {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+/* ============================= */
+/* INPUTS */
+/* ============================= */
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    color: white;
+    font-size: 14px;
+}
+
+.input-icon {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+.input-icon i {
+    color: white;
+    margin-right: 10px;
+}
+
+.input-icon input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+    width: 100%;
+    font-size: 14px;
+}
+
+/* ============================= */
+/* BOTÓN */
+/* ============================= */
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #00c6ff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background: #0072ff;
+    transform: scale(1.03);
+}
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 450px) {
+    .login-container {
+        width: 90%;
+        padding: 30px;
+    }
+}

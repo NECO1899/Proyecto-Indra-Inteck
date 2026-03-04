@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAC_VPN - Sistema de Activos</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <!-- LOGO -->
+    <div class="logo">
+        SIAC_VPN
+    </div>
+
+    <!-- LINKS -->
+    <nav class="nav-links" id="navLinks">
+
+        <a href="#" onclick="cargarSeccion('/sistema/ingreso')">
+            Ingreso Activos
+        </a>
+        <a href="#" onclick="mostrarSeccion('depuracion')">Depuración</a>
+        <a href="#" onclick="mostrarSeccion('salida')">Salida Activos</a>
+        <a href="#" onclick="mostrarSeccion('visitantes')">Visitantes</a>
+        <a href="#" onclick="mostrarSeccion('consulta')">Consulta</a>
+        <a href="#" onclick="mostrarSeccion('informes')">Informes</a>
+
+        {% if session.get('rol') == 'admin' %}
+        <div class="dropdown">
+            <a href="#" class="menu-link">
+                Administrador ▾
+            </button>
+            <div class="dropdown-content">
+                <a href="#">Usuarios</a>
+                <a href="#">Auditoría</a>
+                <a href="#">Configuración</a>
+            </div>
+        </div>
+        {% endif %}
+
+    </nav>
+
+    <!-- DERECHA -->
+    <div class="nav-right">
+
+        <span class="usuario">
+            <i class="fas fa-user"></i>
+            {{ session.get('usuario') }}
+        </span>
+
+        <a href="#" onclick="abrirModal()" class="logout-btn">
+           <i class="fas fa-power-off"></i>
+        </a>
+
+        <!-- HAMBURGUESA -->
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+
+    </div>
+
+    <div class="watermark">
+       SIAC_VPN 
+    </div>
+
+</header>
+
+<div id="contenido-principal" class="contenido-principal">
+    
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("active");
+}
+</script>
+
+<div id="logoutModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>¿Cerrar sesión?</h3>
+        <p>Se cerrará tu sesión actual.</p>
+
+        <div class="modal-actions">
+            <button onclick="cerrarModal()" class="btn-cancelar">
+                Cancelar
+            </button>
+
+            <a href="{{ url_for('auth.logout') }}" class="btn-confirmar">
+                Cerrar sesión
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModal() {
+    document.getElementById("logoutModal").style.display = "flex";
+}
+
+function cerrarModal() {
+    document.getElementById("logoutModal").style.display = "none";
+}
+</script>
+
+<script>
+function mostrarSeccion(seccion) {
+
+    const contenedor = document.getElementById("contenido-principal");
+
+    const titulos = {
+        ingreso: "Ingreso de Activos",
+        depuracion: "Depuración de Activos",
+        salida: "Salida de Activos",
+        visitantes: "Control de Visitantes",
+        consulta: "Consulta de Inventario",
+        informes: "Generación de Informes"
+    };
+
+    contenedor.innerHTML = `
+        <div class="modulo-container">
+            <h2>${titulos[seccion]}</h2>
+            <div class="card-siac">
+                <p>El formulario de <strong>${titulos[seccion]}</strong> se cargará aquí próximamente.</p>
+            </div>
+        </div>
+    `;
+}
+</script>
+
+<script>
+function cargarSeccion(url) {
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById("contenido-principal").innerHTML = html;
+
+            setTimeout(() => {
+                inicializarIngreso();
+            }, 50);
+        });
+}
+</script>
+
+<script>
+function inicializarIngreso() {
+
+  const CAMPOS = {
+    "EQUIPO COMPUTADOR": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial principal"],
+      ["serial_indra","Serial INDRA"],
+      ["mac_ethernet","MAC Ethernet"],
+      ["mac_wifi","MAC WiFi"],
+      ["ram","Memoria RAM"],
+      ["disco_duro","Capacidad Disco duro"],
+      ["descripcion","Descripción general"]
+    ],
+    "MONITOR": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial monitor"],
+      ["serial_indra","Serial INDRA monitor"],
+      ["descripcion","Descripción"]
+    ],
+    "MOUSE": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial mouse"],
+      ["serial_indra","Serial INDRA mouse"]
+    ],
+    "TECLADO": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial teclado"],
+      ["serial_indra","Serial INDRA teclado"]
+    ],
+    "IMPRESORA": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial impresora"],
+      ["serial_indra","Serial INDRA impresora"]
+    ],
+    "ESCÁNER": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial escáner"],
+      ["serial_indra","Serial INDRA escáner"]
+    ],
+    "PISTOLA LECTORA": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_principal","Serial pistola"],
+      ["serial_indra","Serial INDRA pistola"]
+    ],
+    "HDMI": [
+      ["usuario_asignado","Usuario asignado"],
+      ["serial_indra","Serial INDRA HDMI"]
+    ]
+  };
+
+  const CATEGORIAS = {
+    "ECOPETROL": [
+      "EQUIPO COMPUTADOR",
+      "MONITOR",
+      "MOUSE",
+      "TECLADO",
+      "IMPRESORA"
+    ],
+    "OCENSA": [
+      "EQUIPO COMPUTADOR",
+      "ESCÁNER",
+      "PISTOLA LECTORA",
+      "HDMI"
+    ]
+  };
+
+  const REGIONES_ECOPETROL = [
+    "Regional Bogotá",
+    "Regional Central",
+    "Regional Llanos",
+    "Regional Norte",
+    "Regional Sur"
+  ];
+
+  const proyecto = document.getElementById("proyecto");
+  const categoria = document.getElementById("categoria");
+  const camposDiv = document.getElementById("campos");
+
+  if (!proyecto) return;
+
+  proyecto.addEventListener("change", () => {
+
+    categoria.innerHTML = `<option disabled selected>Selecciona...</option>`;
+    camposDiv.innerHTML = "";
+    categoria.disabled = false;
+
+    (CATEGORIAS[proyecto.value] || []).forEach(cat => {
+      const opt = document.createElement("option");
+      opt.textContent = opt.value = cat;
+      categoria.appendChild(opt);
+    });
+  });
+
+  categoria.addEventListener("change", () => {
+
+    camposDiv.innerHTML = "";
+
+    const campos = CAMPOS[categoria.value] || [];
+
+    // REGIONAL SOLO PARA ECOPETROL
+    if (proyecto.value === "ECOPETROL") {
+
+      const selectOptions = REGIONES_ECOPETROL
+        .map(r => `<option value="${r}">${r}</option>`)
+        .join("");
+
+      const wrapperRegional = document.createElement("div");
+      wrapperRegional.classList.add("form-group");
+
+      wrapperRegional.innerHTML = `
+        <label>Regional</label>
+        <select id="regional">
+          <option value="" disabled selected>Selecciona la regional...</option>
+          ${selectOptions}
+        </select>
+      `;
+
+      camposDiv.appendChild(wrapperRegional);
+    }
+
+    // CAMPOS DINÁMICOS
+    campos.forEach(([id, label]) => {
+
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("form-group");
+
+      wrapper.innerHTML = `
+        <label>${label}</label>
+        <input id="${id}" placeholder="Ingresa ${label.toLowerCase()}">
+      `;
+
+      camposDiv.appendChild(wrapper);
+    });
+
+  });
+
+  const btn = document.getElementById("btnGuardar");
+
+  if (btn) {
+    btn.addEventListener("click", () => {
+      alert("Activo guardado correctamente (simulado).");
+    });
+  }
+
+}
+</script>
+
+</body>
+</html>
