@@ -1,0 +1,74 @@
+<div class="modulo-container">
+
+  <h2>Consulta de Inventario</h2>
+  <p>Selecciona una categoría y criterio para buscar en la base almacenada.</p>
+
+  <div class="card-siac">
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="categoria">
+          <option value="" selected disabled>Selecciona…</option>
+          <option>EQUIPO COMPUTADOR</option>
+          <option>MONITOR</option>
+          <option>MOUSE</option>
+          <option>TECLADO</option>
+          <option>IMPRESORA</option>
+          <option>ESCÁNER</option>
+          <option>PISTOLA LECTORA</option>
+          <option>HDMI</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Criterio de búsqueda</label>
+        <select id="criterio">
+          <option value="" disabled selected>
+            Selecciona una categoría primero…
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Valor a buscar</label>
+        <input id="valor" placeholder="Escribe el valor…">
+      </div>
+
+    </div>
+
+    <button id="btnBuscar" class="btn-siac">
+      Buscar
+    </button>
+
+  </div>
+
+  <div class="card-siac">
+
+    <h3 class="titulo-resultados">Resultados</h3>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+      <table class="tabla-siac">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Categoría</th>
+            <th>Usuario</th>
+            <th>Serial</th>
+            <th>Serial INDRA</th>
+            <th>MAC Eth</th>
+            <th>MAC WiFi</th>
+            <th>RAM</th>
+            <th>Disco</th>
+            <th>Descripción</th>
+            <th>Creado</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>

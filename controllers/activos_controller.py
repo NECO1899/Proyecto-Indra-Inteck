@@ -16,3 +16,11 @@ def ingreso_activos():
 @activos_bp.route('/depuracion')
 def depuracion():
     return render_template('Depuracion.html')
+
+@activos_bp.route("/consulta")
+def consulta():
+    return render_template("Consulta.html")
+
+@activos_bp.route("/informes")
+def informes():
+    return render_template("Informes.html")

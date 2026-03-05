@@ -1,0 +1,53 @@
+<div class="modulo-container">
+
+    <h2>Generación de Informes</h2>
+    <p>Exporta datos del inventario en formato CSV para Power BI.</p>
+
+    <div class="card-siac">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Categoría (opcional)</label>
+                <select id="categoriaInforme">
+                    <option value="">(Todas las categorías)</option>
+                    <option>EQUIPO COMPUTADOR</option>
+                    <option>MONITOR</option>
+                    <option>MOUSE</option>
+                    <option>TECLADO</option>
+                    <option>IMPRESORA</option>
+                    <option>ESCÁNER</option>
+                    <option>PISTOLA LECTORA</option>
+                    <option>HDMI</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de informe</label>
+                <select id="tipoInforme">
+                    <option value="todo">Inventario completo</option>
+                    <option value="filtro_categoria">Solo por categoría</option>
+                    <option value="por_usuario">Equipos por usuario</option>
+                    <option value="faltantes_serial_indra">Equipos sin serial INDRA</option>
+                    <option value="sin_usuario">Equipos sin usuario asignado</option>
+                </select>
+            </div>
+
+        </div>
+
+        <button id="btnGenerarInforme" class="btn-siac">
+            Generar CSV
+        </button>
+
+    </div>
+
+    <div class="card-siac">
+        <h3 class="titulo-resultados">Vista previa (primeros resultados)</h3>
+
+        <div style="overflow-x:auto; margin-top:15px;">
+            <table class="tabla-siac">
+                <thead id="theadInforme"></thead>
+                <tbody id="tbodyInforme"></tbody>
+            </table>
+        </div>
+    </div>

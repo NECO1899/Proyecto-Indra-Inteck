@@ -32,8 +32,12 @@
         </a>
         <a href="#" onclick="mostrarSeccion('salida')">Salida Activos</a>
         <a href="#" onclick="mostrarSeccion('visitantes')">Visitantes</a>
-        <a href="#" onclick="mostrarSeccion('consulta')">Consulta</a>
-        <a href="#" onclick="mostrarSeccion('informes')">Informes</a>
+        <a href="#" onclick="cargarSeccion('/sistema/consulta')">
+            Consulta
+        </a>
+        <a href="#" onclick="cargarSeccion('/sistema/informes')">
+            Informes
+        </a>
 
         {% if session.get('rol') == 'admin' %}
         <div class="dropdown">
@@ -154,6 +158,12 @@ function cargarSeccion(url) {
 
                 if (url.includes("depuracion")) {
                     inicializarDepuracion();
+                }
+                if (url.includes("consulta")) {
+                    inicializarConsulta();
+                }
+                if (url.includes("informes")) {
+                    inicializarInformes();
                 }
 
             }, 50);
@@ -483,6 +493,268 @@ function inicializarDepuracion() {
         }
 
         ejecutarBusqueda();
+    });
+
+    openDB();
+}
+</script>
+
+<script>
+function inicializarConsulta() {
+
+    const CRITERIOS_POR_CATEGORIA = {
+        "EQUIPO COMPUTADOR": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial PC"],
+            ["serial_indra", "Serial INDRA"],
+            ["mac_ethernet", "MAC Ethernet"],
+            ["mac_wifi", "MAC WiFi"],
+            ["ram", "RAM"],
+            ["disco_duro", "Disco duro"],
+            ["descripcion", "Descripción"]
+        ],
+        "MONITOR": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial monitor"],
+            ["serial_indra", "Serial INDRA monitor"],
+            ["descripcion", "Descripción"]
+        ],
+        "MOUSE": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial mouse"],
+            ["serial_indra", "Serial INDRA mouse"]
+        ],
+        "TECLADO": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial teclado"],
+            ["serial_indra", "Serial INDRA teclado"]
+        ],
+        "IMPRESORA": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial impresora"],
+            ["serial_indra", "Serial INDRA impr."]
+        ],
+        "ESCÁNER": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial escáner"],
+            ["serial_indra", "Serial INDRA scanner"]
+        ],
+        "PISTOLA LECTORA": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_principal", "Serial pistola lectora"],
+            ["serial_indra", "Serial INDRA pistola lectora"]
+        ],
+        "HDMI": [
+            ["usuario_asignado", "Usuario asignado"],
+            ["serial_indra", "Serial INDRA HDMI"]
+        ]
+    };
+
+    const categoriaSel = document.getElementById("categoria");
+    const criterioSel  = document.getElementById("criterio");
+    const tbody        = document.getElementById("tbody");
+    const btnBuscar    = document.getElementById("btnBuscar");
+
+    if (!categoriaSel) return;
+
+    const DB_NAME='inventario_indra';
+    const STORE='assets';
+    let db;
+
+    function openDB(){
+        return new Promise((resolve,reject)=>{
+            const req=indexedDB.open(DB_NAME,1);
+            req.onsuccess=()=>{db=req.result;resolve(db);}
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function getAll(){
+        return new Promise((resolve,reject)=>{
+            const req=db.transaction(STORE).objectStore(STORE).getAll();
+            req.onsuccess=()=>resolve(req.result||[]);
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    categoriaSel.addEventListener("change", () => {
+
+        criterioSel.innerHTML = `<option disabled selected>Selecciona...</option>`;
+        const criterios = CRITERIOS_POR_CATEGORIA[categoriaSel.value] || [];
+
+        criterios.forEach(([v,t])=>{
+            const opt=document.createElement("option");
+            opt.value=v;
+            opt.textContent=t;
+            criterioSel.appendChild(opt);
+        });
+
+    });
+
+    function pintarTabla(rows){
+        tbody.innerHTML="";
+        rows.forEach(r=>{
+            const tr=document.createElement("tr");
+            tr.innerHTML=`
+                <td>${r.id??""}</td>
+                <td>${r.categoria??""}</td>
+                <td>${r.usuario_asignado??""}</td>
+                <td>${r.serial_principal??""}</td>
+                <td>${r.serial_indra??""}</td>
+                <td>${r.mac_ethernet??""}</td>
+                <td>${r.mac_wifi??""}</td>
+                <td>${r.ram??""}</td>
+                <td>${r.disco_duro??""}</td>
+                <td>${r.descripcion??""}</td>
+                <td>${r.created_at??""}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    btnBuscar.addEventListener("click", async ()=>{
+
+        const cat=categoriaSel.value;
+        const crit=criterioSel.value;
+        const val=document.getElementById("valor").value.trim().toLowerCase();
+
+        if(!cat||!crit||!val){
+            alert("Completa los campos");
+            return;
+        }
+
+        const all=await getAll();
+        const filtrados=all.filter(r=>{
+            if(r.categoria!==cat) return false;
+            const campo=(r[crit]||"").toString().toLowerCase();
+            return campo.includes(val);
+        });
+
+        pintarTabla(filtrados);
+
+    });
+
+    openDB();
+}
+</script>
+
+<script>
+function inicializarInformes() {
+
+    const categoriaSel = document.getElementById("categoriaInforme");
+    const tipoSel      = document.getElementById("tipoInforme");
+    const btnGenerar   = document.getElementById("btnGenerarInforme");
+    const thead        = document.getElementById("theadInforme");
+    const tbody        = document.getElementById("tbodyInforme");
+
+    if (!categoriaSel) return;
+
+    const DB_NAME = 'inventario_indra';
+    const STORE   = 'assets';
+    let db;
+
+    function openDB(){
+        return new Promise((resolve,reject)=>{
+            const req = indexedDB.open(DB_NAME,1);
+            req.onsuccess=()=>{db=req.result;resolve(db)};
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function getAll(){
+        return new Promise((resolve,reject)=>{
+            const req = db.transaction(STORE).objectStore(STORE).getAll();
+            req.onsuccess=()=>resolve(req.result||[]);
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function preview(rows){
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+
+        if(rows.length === 0){
+            tbody.innerHTML = "<tr><td>No hay datos.</td></tr>";
+            return;
+        }
+
+        const headers = Object.keys(rows[0]);
+
+        thead.innerHTML = `
+            <tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr>
+        `;
+
+        rows.slice(0,5).forEach(r=>{
+            const tr = `
+                <tr>
+                    ${headers.map(h=>`<td>${r[h]??""}</td>`).join("")}
+                </tr>
+            `;
+            tbody.innerHTML += tr;
+        });
+    }
+
+    function toCSV(rows){
+        if(rows.length === 0) return "";
+
+        const headers = Object.keys(rows[0]);
+        const lines = [headers.join(",")];
+
+        rows.forEach(r=>{
+            const values = headers.map(h=>{
+                const val = r[h] ?? "";
+                return `"${String(val).replace(/"/g,'""')}"`;
+            });
+            lines.push(values.join(","));
+        });
+
+        return lines.join("\n");
+    }
+
+    function downloadCSV(text, filename){
+        const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    btnGenerar.addEventListener("click", async ()=>{
+
+        let rows = await getAll();
+
+        const categoria = categoriaSel.value;
+        const tipo      = tipoSel.value;
+
+        if(tipo === "filtro_categoria" && categoria){
+            rows = rows.filter(r => r.categoria === categoria);
+        }
+
+        if(tipo === "por_usuario"){
+            rows = rows.filter(r => (r.usuario_asignado||"").trim() !== "");
+        }
+
+        if(tipo === "faltantes_serial_indra"){
+            rows = rows.filter(r => !r.serial_indra);
+        }
+
+        if(tipo === "sin_usuario"){
+            rows = rows.filter(r => !r.usuario_asignado);
+        }
+
+        preview(rows);
+
+        if(rows.length === 0){
+            alert("No hay datos para el informe seleccionado.");
+            return;
+        }
+
+        const csv = toCSV(rows);
+        const filename =
+            `informe_${tipo}_${new Date().toISOString().slice(0,10)}.csv`;
+
+        downloadCSV(csv, filename);
     });
 
     openDB();
