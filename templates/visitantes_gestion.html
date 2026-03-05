@@ -1,0 +1,118 @@
+<div class="modulo-container">
+
+    <h2>Gestión de Visitantes</h2>
+    <p>Consulta por <b>ID</b> o <b>Fecha de ingreso</b>. Puedes <b>aprobar</b> o <b>rechazar</b> la salida y registrar <b>observaciones</b>.</p>
+
+    <!-- Filtros -->
+    <div class="card-siac">
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>ID de visitante</label>
+                <input id="idVis" type="number" placeholder="Ej: 10" />
+            </div>
+
+            <div class="form-group">
+                <label>Fecha de ingreso</label>
+                <input id="fechaIng" type="date" />
+            </div>
+
+            <div class="form-group" style="display:flex; gap:10px; align-items:flex-end;">
+                <button id="btnBuscar" class="btn-siac">Buscar</button>
+                <button id="btnLimpiar" type="button" class="btn-siac">Limpiar</button>
+            </div>
+
+        </div>
+
+        <div class="muted" style="margin-top:10px;">
+            Si dejas ambos campos vacíos, se listarán <b>todos</b> los visitantes.
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card-siac" id="cardLista" style="display:none; margin-top:20px;">
+        <h3>Resultados</h3>
+
+        <div style="overflow:auto;">
+            <table class="tabla-siac">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Área/Persona</th>
+                        <th>Estado salida</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+
+        <div class="muted" id="resumen" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- Detalle -->
+    <div class="card-siac" id="cardDetalle" style="display:none; margin-top:20px;">
+        <h3>Detalle del visitante</h3>
+
+        <div class="form-grid">
+
+            <div class="form-group"><label>ID</label><input id="d_id" readonly></div>
+            <div class="form-group"><label>Fecha ingreso</label><input id="d_fecha" readonly></div>
+            <div class="form-group"><label>Nombres</label><input id="d_nombres" readonly></div>
+            <div class="form-group"><label>Apellidos</label><input id="d_apellidos" readonly></div>
+            <div class="form-group"><label>Ocupación</label><input id="d_ocupacion" readonly></div>
+            <div class="form-group"><label>Teléfono</label><input id="d_tel" readonly></div>
+            <div class="form-group"><label>Contacto emergencia</label><input id="d_contacto" readonly></div>
+            <div class="form-group"><label>Teléfono emergencia</label><input id="d_telEmer" readonly></div>
+            <div class="form-group"><label>RH</label><input id="d_rh" readonly></div>
+            <div class="form-group"><label>EPS</label><input id="d_eps" readonly></div>
+            <div class="form-group"><label>ARL</label><input id="d_arl" readonly></div>
+            <div class="form-group"><label>Área visita</label><input id="d_area" readonly></div>
+            <div class="form-group"><label>Consume medicamentos</label><input id="d_medSN" readonly></div>
+            <div class="form-group"><label>Medicamentos</label><input id="d_med" readonly></div>
+            <div class="form-group"><label>Alergias</label><input id="d_aleSN" readonly></div>
+            <div class="form-group"><label>Detalle alergias</label><input id="d_ale" readonly></div>
+
+            <div class="form-group" style="grid-column:1 / -1;">
+                <label>Dispositivos declarados</label>
+                <textarea id="d_disp" readonly rows="3"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Acción -->
+    <div class="card-siac" id="cardAccion" style="display:none; margin-top:20px;">
+        <h3>Acción de salida</h3>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Selecciona acción</label>
+                <select id="selAccion">
+                    <option value="" disabled selected>— Selecciona —</option>
+                    <option value="APROBADA">Aprobar salida</option>
+                    <option value="RECHAZADA">Rechazar salida</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="grid-column:1 / -1;">
+                <label>Observaciones</label>
+                <textarea id="txtObs" maxlength="7000"></textarea>
+                <div class="muted"><span id="obsCount">0</span>/7000</div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:15px; display:flex; gap:10px;">
+            <button id="btnAplicar" class="btn-siac">Aplicar</button>
+            <button id="btnCancelar" type="button" class="btn-siac">Cancelar</button>
+        </div>
+
+        <div class="muted" id="notaEstado" style="margin-top:10px;"></div>
+    </div>
+
+</div>

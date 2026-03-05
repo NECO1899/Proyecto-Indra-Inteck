@@ -33,6 +33,9 @@ def salida_seguridad():
 def registro_visitantes():
     return render_template("Visitantes_Registro.html")
 
+@activos_bp.route("/gestion_visitantes")
+def gestion_visitantes():
+    return render_template("Visitantes_Gestion.html")
 
 @activos_bp.route("/consulta")
 def consulta():

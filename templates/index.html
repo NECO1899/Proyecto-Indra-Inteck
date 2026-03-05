@@ -52,7 +52,7 @@
                  <a href="#" onclick="cargarSeccion('/sistema/registro_visitantes')">
                      Registro Visitantes
                  </a>
-                 <a href="#" onclick="cargarSeccion('/sistema/visitantes_gestion')">
+                 <a href="#" onclick="cargarSeccion('/sistema/gestion_visitantes')">
                      Gestión Visitantes
                  </a>
             </div>
@@ -1407,6 +1407,305 @@ function inicializarVisitantesRegistro(){
     openDB();
 }
 
+</script>
+
+<script>
+function inicializarGestionVisitantes(){
+
+/* ============================
+   IndexedDB (inventario_indra)
+   ============================ */
+
+let db;
+const DB_NAME = 'inventario_indra';
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME, 4);
+
+    req.onupgradeneeded = (ev)=>{
+      const _db = ev.target.result;
+
+      if(!_db.objectStoreNames.contains('assets'))
+        _db.createObjectStore('assets',{keyPath:'id',autoIncrement:true});
+
+      if(!_db.objectStoreNames.contains('salidas'))
+        _db.createObjectStore('salidas',{keyPath:'id',autoIncrement:true});
+
+      let os;
+      if(!_db.objectStoreNames.contains('visitantes')){
+        os = _db.createObjectStore('visitantes',{keyPath:'id',autoIncrement:true});
+        os.createIndex('fecha','fecha');
+        os.createIndex('estado_salida','estado_salida');
+      }else{
+        os = ev.currentTarget.transaction.objectStore('visitantes');
+        if(!os.indexNames.contains('fecha')) os.createIndex('fecha','fecha');
+        if(!os.indexNames.contains('estado_salida')) os.createIndex('estado_salida','estado_salida');
+      }
+    };
+
+    req.onsuccess = ()=>{ db=req.result; resolve(db); };
+    req.onerror = ()=>reject(req.error);
+  });
+}
+
+function getAllVisitantes(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('visitantes','readonly');
+    const req = tx.objectStore('visitantes').getAll();
+    req.onsuccess = ()=>resolve(req.result||[]);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+
+function getVisitanteById(id){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('visitantes','readonly');
+    const req = tx.objectStore('visitantes').get(id);
+    req.onsuccess = ()=>resolve(req.result||null);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+
+function updateSalida(id, estado, observaciones){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('visitantes','readwrite');
+    const store = tx.objectStore('visitantes');
+
+    const getReq = store.get(id);
+    getReq.onsuccess = ()=>{
+      const obj = getReq.result;
+      if(!obj){ reject(new Error('No existe el visitante')); return; }
+
+      obj.estado_salida = estado;
+      obj.observaciones_salida = (observaciones||'').trim();
+      obj.fecha_estado_salida = new Date().toISOString();
+
+      const putReq = store.put(obj);
+      putReq.onsuccess = ()=>resolve(true);
+      putReq.onerror = ()=>reject(putReq.error);
+    };
+    getReq.onerror = ()=>reject(getReq.error);
+  });
+}
+
+/* ============================
+   Helpers UI
+   ============================ */
+
+const $ = (sel)=>document.querySelector(sel);
+const fmt = (iso)=>{ try{return new Date(iso).toLocaleString('es-CO');}catch{return iso||'';} };
+
+const pill = (estado)=>{
+  const e = (estado||'').toUpperCase();
+  if(e==='APROBADA') return 'APROBADA';
+  if(e==='RECHAZADA') return 'RECHAZADA';
+  return 'PENDIENTE';
+};
+
+/* ============================
+   DOM refs
+   ============================ */
+
+const idVis = $('#idVis');
+const fechaIng = $('#fechaIng');
+const btnBuscar = $('#btnBuscar');
+const btnLimpiar = $('#btnLimpiar');
+
+const cardLista = $('#cardLista');
+const tbody = $('#tbody');
+const resumen = $('#resumen');
+
+const cardDetalle = $('#cardDetalle');
+const d_id = $('#d_id'), d_fecha = $('#d_fecha'), d_nombres=$('#d_nombres'), d_apellidos=$('#d_apellidos'),
+      d_ocupacion=$('#d_ocupacion'), d_tel=$('#d_tel'), d_contacto=$('#d_contacto'), d_telEmer=$('#d_telEmer'),
+      d_rh=$('#d_rh'), d_eps=$('#d_eps'), d_arl=$('#d_arl'), d_area=$('#d_area'),
+      d_medSN=$('#d_medSN'), d_med=$('#d_med'), d_aleSN=$('#d_aleSN'), d_ale=$('#d_ale'), d_disp=$('#d_disp');
+
+const cardAccion = $('#cardAccion');
+const selAccion = $('#selAccion');
+const txtObs = $('#txtObs');
+const obsCount = $('#obsCount');
+const btnAplicar = $('#btnAplicar');
+const btnCancelar = $('#btnCancelar');
+const notaEstado = $('#notaEstado');
+
+let currentId = null;
+
+/* ============================
+   Buscar / Listar
+   ============================ */
+
+btnBuscar.addEventListener('click', buscar);
+btnLimpiar.addEventListener('click', limpiar);
+
+async function limpiar(){
+  idVis.value = '';
+  fechaIng.value = '';
+  cardLista.style.display = 'none';
+  tbody.innerHTML = '';
+  resumen.textContent = '';
+  ocultarDetalle();
+}
+
+async function buscar(){
+
+  let rows = await getAllVisitantes();
+
+  const idVal = parseInt(idVis.value,10);
+  const fechaVal = fechaIng.value;
+
+  if(!isNaN(idVal)) rows = rows.filter(r=>r.id===idVal);
+
+  if(fechaVal){
+    rows = rows.filter(r=>{
+      const d = new Date(r.fecha||'');
+      if(isNaN(d)) return false;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${yyyy}-${mm}-${dd}` === fechaVal;
+    });
+  }
+
+  renderTabla(rows);
+}
+
+/* ============================
+   Render tabla
+   ============================ */
+
+function renderTabla(rows){
+
+  rows.sort((a,b)=> (b.id||0)-(a.id||0));
+  tbody.innerHTML='';
+
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${r.id}</td>
+      <td>${fmt(r.fecha)}</td>
+      <td>${r.nombres||''}</td>
+      <td>${r.apellidos||''}</td>
+      <td>${r.area_visita||''}</td>
+      <td>${pill(r.estado_salida)}</td>
+      <td>
+        <button data-id="${r.id}" data-act="ver">Ver</button>
+        <button data-id="${r.id}" data-act="aprobar">Aprobar</button>
+        <button data-id="${r.id}" data-act="rechazar">Rechazar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  cardLista.style.display='block';
+  resumen.textContent=`${rows.length} visitante(s) encontrado(s).`;
+
+  tbody.querySelectorAll('button[data-id]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id=parseInt(btn.dataset.id,10);
+      const act=btn.dataset.act;
+      const data=await getVisitanteById(id);
+      if(!data) return;
+
+      if(act==='ver'){
+        mostrarDetalle(data);
+      }else if(act==='aprobar'){
+        mostrarDetalle(data);
+        abrirAccion('APROBADA');
+      }else if(act==='rechazar'){
+        mostrarDetalle(data);
+        abrirAccion('RECHAZADA');
+      }
+    });
+  });
+}
+
+/* ============================
+   Detalle / Acción
+   ============================ */
+
+function ocultarDetalle(){
+  cardDetalle.style.display='none';
+  cardAccion.style.display='none';
+  currentId=null;
+}
+
+function mostrarDetalle(v){
+
+  currentId=v.id;
+
+  d_id.value=v.id;
+  d_fecha.value=fmt(v.fecha);
+  d_nombres.value=v.nombres||'';
+  d_apellidos.value=v.apellidos||'';
+  d_ocupacion.value=v.ocupacion||'';
+  d_tel.value=v.telefono||'';
+  d_contacto.value=v.contacto_emergencia||'';
+  d_telEmer.value=v.tel_emergencia||'';
+  d_rh.value=v.rh||'';
+  d_eps.value=v.eps||'';
+  d_arl.value=v.arl||'';
+  d_area.value=v.area_visita||'';
+  d_medSN.value=v.consume_medicamento||'NO';
+  d_med.value=v.detalle_medicamento||'';
+  d_aleSN.value=v.tiene_alergias||'NO';
+  d_ale.value=v.detalle_alergias||'';
+  d_disp.value=v.detalle_equipos||'Sin dispositivos';
+
+  cardDetalle.style.display='block';
+  cardAccion.style.display='none';
+}
+
+function abrirAccion(valor){
+  selAccion.value=valor||'';
+  txtObs.value='';
+  obsCount.textContent='0';
+  notaEstado.textContent='Observación obligatoria si la salida es RECHAZADA.';
+  cardAccion.style.display='block';
+}
+
+txtObs.addEventListener('input',()=>{
+  obsCount.textContent=String(txtObs.value.length);
+});
+
+btnCancelar.addEventListener('click',()=>{
+  cardAccion.style.display='none';
+});
+
+btnAplicar.addEventListener('click', async ()=>{
+
+  if(!currentId){ alert('Selecciona un registro.'); return; }
+
+  const accion=selAccion.value;
+  if(!accion){ alert('Selecciona la acción.'); return; }
+
+  const obs=txtObs.value.trim();
+
+  if(accion==='RECHAZADA' && !obs){
+    alert('Debes escribir observaciones para RECHAZAR.');
+    txtObs.focus(); return;
+  }
+
+  try{
+    await updateSalida(currentId,accion,obs);
+    notaEstado.textContent=`Estado actualizado a ${accion}.`;
+    await buscar();
+    const data=await getVisitanteById(currentId);
+    if(data) mostrarDetalle(data);
+    cardAccion.style.display='none';
+    alert('Estado actualizado correctamente.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo actualizar.');
+  }
+
+});
+
+/* Init */
+openDB();
+
+}
 </script>
 
 </body>
