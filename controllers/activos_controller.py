@@ -17,6 +17,23 @@ def ingreso_activos():
 def depuracion():
     return render_template('Depuracion.html')
 
+@activos_bp.route("/salida_solicitante")
+def salida_solicitante():
+    return render_template("Salida_Solicitante.html")
+
+@activos_bp.route("/salida_aprobacion")
+def salida_aprobacion():
+    return render_template("Salida_Aprobacion.html")
+
+@activos_bp.route("/salida_seguridad")
+def salida_seguridad():
+    return render_template("Salida_Seguridad.html")
+
+@activos_bp.route("/registro_visitantes")
+def registro_visitantes():
+    return render_template("Visitantes_Registro.html")
+
+
 @activos_bp.route("/consulta")
 def consulta():
     return render_template("Consulta.html")

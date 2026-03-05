@@ -1,0 +1,88 @@
+<div class="modulo-container">
+
+    <h2>Solicitante</h2>
+    <p>Busca un activo y genera una solicitud de salida.</p>
+
+    <!-- BUSQUEDA -->
+    <div class="card-siac">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Proyecto</label>
+                <select id="proyectoSalida">
+                    <option value="" disabled selected>Selecciona...</option>
+                    <option>ECOPETROL</option>
+                    <option>OCENSA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="categoriaSalida" disabled>
+                    <option value="" disabled selected>Selecciona proyecto...</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Buscar por</label>
+                <select id="criterioSalida" disabled>
+                    <option value="" disabled selected>Selecciona categoría...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Valor</label>
+                <input id="valorSalida" disabled placeholder="Usuario o Serial...">
+            </div>
+
+        </div>
+
+        <button id="btnBuscarSalida" class="btn-siac" disabled>
+            Buscar Activo
+        </button>
+
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="card-siac" id="cardResultadosSalida" style="display:none;">
+        <h3 class="titulo-resultados">Resultados</h3>
+
+        <div style="overflow-x:auto;">
+            <table class="tabla-siac">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Categoría</th>
+                        <th>Usuario</th>
+                        <th>Serial</th>
+                        <th>Serial INDRA</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodySalida"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- DETALLE -->
+    <div class="card-siac" id="cardDetalleSalida" style="display:none;">
+        <h3>Detalle del Activo</h3>
+        <div id="detalleSalida" class="form-grid"></div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            <textarea id="obsSalida" maxlength="7000"></textarea>
+            <small id="contadorObsSalida">0 / 7000</small>
+        </div>
+
+        <button id="btnSolicitarSalida" class="btn-siac">
+            Solicitar Salida
+        </button>
+    </div>
+
+</div>

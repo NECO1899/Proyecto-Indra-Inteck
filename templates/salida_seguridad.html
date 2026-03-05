@@ -1,0 +1,59 @@
+<div class="modulo-container">
+
+    <h2>Seguridad</h2>
+    <p>Confirmación física de salida de activos.</p>
+
+    <!-- Buscador -->
+    <div class="card-siac">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>ID Solicitud (opcional)</label>
+                <input id="idSeguridad" type="number" placeholder="Ej: 15">
+            </div>
+
+            <div class="form-group" style="align-self:end;">
+                <button id="btnBuscarSeguridad" class="btn-siac">
+                    Consultar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card-siac" id="cardListaSeguridad" style="display:none;">
+        <h3>Solicitudes Aprobadas</h3>
+        <table class="tabla-siac">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Proyecto</th>
+                    <th>Categoría</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tbodySeguridad"></tbody>
+        </table>
+    </div>
+
+    <!-- Detalle -->
+    <div class="card-siac" id="cardDetalleSeguridad" style="display:none;">
+        <h3>Confirmar Salida</h3>
+
+        <div id="detalleSeguridad" class="form-grid"></div>
+
+        <div class="form-group">
+            <label>Nombre del Guardia</label>
+            <input id="nombreGuardia">
+        </div>
+
+        <div class="form-group">
+            <label>Observación</label>
+            <input id="obsSeguridad">
+        </div>
+
+        <button id="btnFinalizarSalida" class="btn-siac">
+            Confirmar Salida
+        </button>
+    </div>
+
+</div>

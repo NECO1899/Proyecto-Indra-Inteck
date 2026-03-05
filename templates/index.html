@@ -30,8 +30,33 @@
         <a href="#" onclick="cargarSeccion('/sistema/depuracion')">
             Depuración
         </a>
-        <a href="#" onclick="mostrarSeccion('salida')">Salida Activos</a>
-        <a href="#" onclick="mostrarSeccion('visitantes')">Visitantes</a>
+        <div class="dropdown">
+            <a href="#" class="menu-link">
+                Salida Activos ▾
+            </a>
+            <div class="dropdown-content">
+                <a href="#" onclick="cargarSeccion('/sistema/salida_solicitante')">
+                    Solicitante
+                </a>
+                <a href="#" onclick="cargarSeccion('/sistema/salida_aprobacion')">
+                    Aprobación
+                </a>
+                <a href="#" onclick="cargarSeccion('/sistema/salida_seguridad')">
+                    Seguridad
+                </a>
+           </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Visitantes ▾</button>
+            <div class="dropdown-content">
+                 <a href="#" onclick="cargarSeccion('/sistema/registro_visitantes')">
+                     Registro Visitantes
+                 </a>
+                 <a href="#" onclick="cargarSeccion('/sistema/visitantes_gestion')">
+                     Gestión Visitantes
+                 </a>
+            </div>
+        </div>
         <a href="#" onclick="cargarSeccion('/sistema/consulta')">
             Consulta
         </a>
@@ -158,6 +183,21 @@ function cargarSeccion(url) {
 
                 if (url.includes("depuracion")) {
                     inicializarDepuracion();
+                }
+                if (url.includes("salida_solicitante")) {
+                    setTimeout(()=>inicializarSalidaSolicitante(),50);
+                }
+                if (url.includes("salida_aprobacion")) {
+                    setTimeout(()=>inicializarSalidaAprobacion(),50);
+                }
+                if (url.includes("salida_seguridad")) {
+                    setTimeout(()=>inicializarSalidaSeguridad(),50);
+                }
+                if (url.includes("registro_visitantes")) {
+                    setTimeout(()=>inicializarVisitantesRegistro(),50);
+                }
+                if (url.includes("gestion_visitantes")) {
+                    setTimeout(()=>inicializarVisitantesGestion(),50);
                 }
                 if (url.includes("consulta")) {
                     inicializarConsulta();
@@ -759,6 +799,614 @@ function inicializarInformes() {
 
     openDB();
 }
+</script>
+
+<script>
+function inicializarSalidaSolicitante() {
+
+    const CAMPOS = {
+        "EQUIPO COMPUTADOR": [
+            ["usuario_asignado","Usuario asignado"],
+            ["serial_principal","Serial principal"],
+            ["serial_indra","Serial INDRA"],
+            ["mac_ethernet","MAC Ethernet"],
+            ["mac_wifi","MAC WiFi"],
+            ["ram","RAM"],
+            ["disco_duro","Disco duro"],
+            ["descripcion","Descripción"]
+        ],
+        "ESCÁNER": [
+            ["usuario_asignado","Usuario asignado"],
+            ["serial_principal","Serial escáner"],
+            ["serial_indra","Serial INDRA escáner"],
+            ["descripcion","Descripción"]
+        ],
+        "IMPRESORA": [
+            ["usuario_asignado","Usuario asignado"],
+            ["serial_principal","Serial impresora"],
+            ["serial_indra","Serial INDRA impresora"],
+            ["descripcion","Descripción"]
+        ]
+    };
+
+    const CATEGORIAS = {
+        "ECOPETROL": ["EQUIPO COMPUTADOR","ESCÁNER","IMPRESORA"],
+        "OCENSA": ["EQUIPO COMPUTADOR","ESCÁNER","IMPRESORA"]
+    };
+
+    const proyecto = document.getElementById("proyectoSalida");
+    const categoria = document.getElementById("categoriaSalida");
+    const criterio = document.getElementById("criterioSalida");
+    const valor = document.getElementById("valorSalida");
+    const btnBuscar = document.getElementById("btnBuscarSalida");
+    const tbody = document.getElementById("tbodySalida");
+    const detalle = document.getElementById("detalleSalida");
+    const btnSolicitar = document.getElementById("btnSolicitarSalida");
+    const obs = document.getElementById("obsSalida");
+    const contador = document.getElementById("contadorObsSalida");
+
+    if (!proyecto) return;
+
+    const DB_NAME = 'inventario_indra';
+    const STORE_ASSETS = 'assets';
+    const STORE_SALIDAS = 'salidas';
+    let db;
+
+    function openDB(){
+        return new Promise((resolve,reject)=>{
+            const req = indexedDB.open(DB_NAME,2);
+            req.onsuccess=()=>{db=req.result;resolve(db)};
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function getAllAssets(){
+        return new Promise((resolve,reject)=>{
+            const req=db.transaction(STORE_ASSETS).objectStore(STORE_ASSETS).getAll();
+            req.onsuccess=()=>resolve(req.result||[]);
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function saveSalida(data){
+        return new Promise((resolve,reject)=>{
+            const req=db.transaction(STORE_SALIDAS,"readwrite")
+                        .objectStore(STORE_SALIDAS)
+                        .add(data);
+            req.onsuccess=()=>resolve(req.result);
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    proyecto.addEventListener("change",()=>{
+        categoria.innerHTML=`<option disabled selected>Selecciona...</option>`;
+        CATEGORIAS[proyecto.value].forEach(c=>{
+            const opt=document.createElement("option");
+            opt.value=opt.textContent=c;
+            categoria.appendChild(opt);
+        });
+        categoria.disabled=false;
+    });
+
+    categoria.addEventListener("change",()=>{
+        criterio.innerHTML=`<option disabled selected>Selecciona...</option>`;
+        CAMPOS[categoria.value].forEach(([k,l])=>{
+            if(k==="usuario_asignado"||k==="serial_principal"||k==="serial_indra"){
+                const opt=document.createElement("option");
+                opt.value=k;
+                opt.textContent=l;
+                criterio.appendChild(opt);
+            }
+        });
+        criterio.disabled=false;
+        valor.disabled=false;
+        btnBuscar.disabled=false;
+    });
+
+    obs.addEventListener("input",()=>{
+        contador.textContent = obs.value.length + " / 7000";
+    });
+
+    btnBuscar.addEventListener("click", async ()=>{
+        const all = await getAllAssets();
+        const filtrados = all.filter(a=>{
+            if(a.categoria!==categoria.value) return false;
+            return (a[criterio.value]||"").toLowerCase()
+                   .includes(valor.value.toLowerCase());
+        });
+
+        tbody.innerHTML="";
+        document.getElementById("cardResultadosSalida").style.display="block";
+
+        filtrados.forEach(a=>{
+            const tr=document.createElement("tr");
+            tr.innerHTML=`
+                <td>${a.id}</td>
+                <td>${a.categoria}</td>
+                <td>${a.usuario_asignado||""}</td>
+                <td>${a.serial_principal||""}</td>
+                <td>${a.serial_indra||""}</td>
+                <td><button class="btn-siac btnSel" data-id="${a.id}">Seleccionar</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll(".btnSel").forEach(btn=>{
+            btn.addEventListener("click",()=>{
+                const asset = filtrados.find(a=>a.id==btn.dataset.id);
+                pintarDetalle(asset);
+            });
+        });
+    });
+
+    function pintarDetalle(asset){
+        detalle.innerHTML="";
+        CAMPOS[asset.categoria].forEach(([k,l])=>{
+            const div=document.createElement("div");
+            div.classList.add("form-group");
+            div.innerHTML=`
+                <label>${l}</label>
+                <input value="${asset[k]||""}" readonly>
+            `;
+            detalle.appendChild(div);
+        });
+        document.getElementById("cardDetalleSalida").style.display="block";
+        btnSolicitar.onclick=async()=>{
+            const id=await saveSalida({
+                fecha:new Date().toISOString(),
+                estado:"SOLICITADA",
+                proyecto:proyecto.value,
+                categoria:categoria.value,
+                asset_id:asset.id,
+                observaciones:obs.value
+            });
+            alert("Solicitud registrada ID "+id);
+        };
+    }
+
+    openDB();
+}
+</script>
+
+<script>
+function inicializarSalidaAprobacion(){
+
+    const DB_NAME = 'inventario_indra';
+    const STORE = 'salidas';
+    let db;
+    let currentId = null;
+
+    const idInput = document.getElementById("idCasoAprobacion");
+    const btnConsultar = document.getElementById("btnConsultarAprobacion");
+    const tbody = document.getElementById("tbodyAprobacion");
+    const cardLista = document.getElementById("cardListaAprobacion");
+    const cardDetalle = document.getElementById("cardDetalleAprobacion");
+    const detalleDiv = document.getElementById("detalleAprobacion");
+    const btnAprobar = document.getElementById("btnAprobar");
+    const btnRechazar = document.getElementById("btnRechazar");
+
+    if(!btnConsultar) return;
+
+    function openDB(){
+        return new Promise((resolve,reject)=>{
+            const req = indexedDB.open(DB_NAME,2);
+            req.onsuccess=()=>{db=req.result;resolve(db)};
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function getAll(){
+        return new Promise((resolve,reject)=>{
+            const req=db.transaction(STORE).objectStore(STORE).getAll();
+            req.onsuccess=()=>resolve(req.result||[]);
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function getById(id){
+        return new Promise((resolve,reject)=>{
+            const req=db.transaction(STORE).objectStore(STORE).get(id);
+            req.onsuccess=()=>resolve(req.result);
+            req.onerror=()=>reject(req.error);
+        });
+    }
+
+    function updateEstado(id,estado){
+        return new Promise((resolve,reject)=>{
+            const tx=db.transaction(STORE,"readwrite");
+            const store=tx.objectStore(STORE);
+
+            const getReq=store.get(id);
+            getReq.onsuccess=()=>{
+                const data=getReq.result;
+                if(!data) return reject("No existe");
+
+                data.estado=estado;
+                data.fecha_estado=new Date().toISOString();
+
+                store.put(data).onsuccess=()=>resolve();
+            };
+        });
+    }
+
+    async function consultar(){
+        const idVal=idInput.value.trim();
+        const all=await getAll();
+
+        let rows=all;
+        if(idVal){
+            rows=all.filter(r=>r.id==idVal);
+        }
+
+        tbody.innerHTML="";
+        cardLista.style.display="block";
+        cardDetalle.style.display="none";
+
+        rows.forEach(r=>{
+            const tr=document.createElement("tr");
+            tr.innerHTML=`
+                <td>${r.id}</td>
+                <td>${r.proyecto}</td>
+                <td>${r.estado}</td>
+                <td>
+                    <button class="btn-siac btnVer" data-id="${r.id}">
+                        Ver
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll(".btnVer").forEach(btn=>{
+            btn.addEventListener("click",async()=>{
+                const id=parseInt(btn.dataset.id);
+                const data=await getById(id);
+                mostrarDetalle(data);
+            });
+        });
+    }
+
+    function mostrarDetalle(data){
+        currentId=data.id;
+        detalleDiv.innerHTML=`
+            <div class="form-group">
+                <label>ID</label>
+                <input value="${data.id}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Proyecto</label>
+                <input value="${data.proyecto}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Categoría</label>
+                <input value="${data.categoria}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Estado</label>
+                <input value="${data.estado}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Observaciones</label>
+                <input value="${data.observaciones||''}" readonly>
+            </div>
+        `;
+
+        cardDetalle.style.display="block";
+    }
+
+    btnConsultar.addEventListener("click",consultar);
+
+    btnAprobar.addEventListener("click",async()=>{
+        if(!currentId) return;
+        await updateEstado(currentId,"APROBADA");
+        alert("Solicitud aprobada");
+        consultar();
+        cardDetalle.style.display="none";
+    });
+
+    btnRechazar.addEventListener("click",async()=>{
+        if(!currentId) return;
+        await updateEstado(currentId,"RECHAZADA");
+        alert("Solicitud rechazada");
+        consultar();
+        cardDetalle.style.display="none";
+    });
+
+    openDB();
+}
+</script>
+
+<script>
+function inicializarSalidaSeguridad(){
+
+    const DB_NAME = "inventario_indra";
+    const STORE = "salidas";
+
+    let db;
+    let currentId = null;
+
+    const idInput = document.getElementById("idSeguridad");
+    const btnBuscar = document.getElementById("btnBuscarSeguridad");
+    const tbody = document.getElementById("tbodySeguridad");
+    const cardLista = document.getElementById("cardListaSeguridad");
+    const cardDetalle = document.getElementById("cardDetalleSeguridad");
+    const detalleDiv = document.getElementById("detalleSeguridad");
+
+    const nombreGuardia = document.getElementById("nombreGuardia");
+    const obsSeguridad = document.getElementById("obsSeguridad");
+    const btnFinalizar = document.getElementById("btnFinalizarSalida");
+
+    if(!btnBuscar) return;
+
+    function openDB(){
+        return new Promise((resolve,reject)=>{
+            const req = indexedDB.open(DB_NAME,2);
+            req.onsuccess = ()=>{ db=req.result; resolve(); };
+            req.onerror = ()=>reject(req.error);
+        });
+    }
+
+    function getAll(){
+        return new Promise((resolve,reject)=>{
+            const req = db.transaction(STORE)
+                          .objectStore(STORE)
+                          .getAll();
+            req.onsuccess = ()=>resolve(req.result||[]);
+            req.onerror = ()=>reject(req.error);
+        });
+    }
+
+    function getById(id){
+        return new Promise((resolve,reject)=>{
+            const req = db.transaction(STORE)
+                          .objectStore(STORE)
+                          .get(id);
+            req.onsuccess = ()=>resolve(req.result);
+            req.onerror = ()=>reject(req.error);
+        });
+    }
+
+    function finalizar(id){
+        return new Promise((resolve,reject)=>{
+            const tx = db.transaction(STORE,"readwrite");
+            const store = tx.objectStore(STORE);
+
+            const getReq = store.get(id);
+            getReq.onsuccess = ()=>{
+                const data = getReq.result;
+                if(!data) return reject();
+
+                data.estado = "FINALIZADA";
+                data.fecha_salida = new Date().toISOString();
+                data.guardia = nombreGuardia.value;
+                data.obs_seguridad = obsSeguridad.value;
+
+                store.put(data).onsuccess = ()=>resolve();
+            };
+        });
+    }
+
+    async function cargar(){
+
+        let rows = await getAll();
+
+        // SOLO APROBADAS
+        rows = rows.filter(r => r.estado === "APROBADA");
+
+        const idVal = idInput.value.trim();
+        if(idVal){
+            rows = rows.filter(r => r.id == idVal);
+        }
+
+        tbody.innerHTML = "";
+        cardLista.style.display = "block";
+        cardDetalle.style.display = "none";
+
+        rows.forEach(r=>{
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${r.id}</td>
+                <td>${r.proyecto||""}</td>
+                <td>${r.categoria||""}</td>
+                <td>
+                    <button class="btn-siac btnVer" data-id="${r.id}">
+                        Ver
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll(".btnVer").forEach(btn=>{
+            btn.addEventListener("click", async()=>{
+                const id = parseInt(btn.dataset.id);
+                const data = await getById(id);
+                mostrarDetalle(data);
+            });
+        });
+    }
+
+    function mostrarDetalle(data){
+
+        currentId = data.id;
+
+        detalleDiv.innerHTML = `
+            <div class="form-group">
+                <label>ID</label>
+                <input value="${data.id}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Proyecto</label>
+                <input value="${data.proyecto||""}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Categoría</label>
+                <input value="${data.categoria||""}" readonly>
+            </div>
+        `;
+
+        cardDetalle.style.display = "block";
+    }
+
+    btnBuscar.addEventListener("click", cargar);
+
+    btnFinalizar.addEventListener("click", async()=>{
+        if(!currentId) return;
+
+        if(!nombreGuardia.value){
+            alert("Debes ingresar el nombre del guardia");
+            return;
+        }
+
+        await finalizar(currentId);
+
+        alert("Salida confirmada y finalizada.");
+
+        nombreGuardia.value="";
+        obsSeguridad.value="";
+        cardDetalle.style.display="none";
+
+        cargar();
+    });
+
+    openDB().then(cargar);
+}
+</script>
+
+<script>
+function inicializarVisitantesRegistro(){
+
+    const DB_NAME = 'inventario_indra';
+    let db;
+
+    const frm = document.getElementById('frmVisitante');
+    if(!frm) return;
+
+    const saveMsg = document.getElementById("saveMsg");
+
+    const consumeMedicamento = document.getElementById("consumeMedicamento");
+    const detalleMedicamento = document.getElementById("detalleMedicamento");
+    const grupoDetalleMedicamento = document.getElementById("grupoDetalleMedicamento");
+
+    const tieneAlergias = document.getElementById("tieneAlergias");
+    const detalleAlergias = document.getElementById("detalleAlergias");
+    const grupoDetalleAlergias = document.getElementById("grupoDetalleAlergias");
+
+    const ingresaEquipos = document.getElementById("ingresaEquipos");
+    const detalleEquipos = document.getElementById("detalleEquipos");
+    const grupoDetalleEquipos = document.getElementById("grupoDetalleEquipos");
+
+    function openDB(){
+        return new Promise((resolve,reject)=>{
+            const req = indexedDB.open(DB_NAME,3);
+            req.onupgradeneeded = ev=>{
+                const d = ev.target.result;
+                if(!d.objectStoreNames.contains('visitantes')){
+                    d.createObjectStore('visitantes',{keyPath:'id',autoIncrement:true});
+                }
+            };
+            req.onsuccess = ()=>{ db=req.result; resolve(); };
+            req.onerror = ()=>reject(req.error);
+        });
+    }
+
+    function save(data){
+        return new Promise((resolve,reject)=>{
+            const tx = db.transaction('visitantes','readwrite');
+            const req = tx.objectStore('visitantes').add(data);
+            req.onsuccess = ()=>resolve(req.result);
+            req.onerror = ()=>reject(req.error);
+        });
+    }
+
+    // Mostrar / Ocultar campos
+    consumeMedicamento.addEventListener("change", ()=>{
+        if(consumeMedicamento.value === "SI"){
+            grupoDetalleMedicamento.style.display = "block";
+            detalleMedicamento.setAttribute("required","true");
+        }else{
+            grupoDetalleMedicamento.style.display = "none";
+            detalleMedicamento.removeAttribute("required");
+            detalleMedicamento.value = "";
+        }
+    });
+
+    tieneAlergias.addEventListener("change", ()=>{
+        if(tieneAlergias.value === "SI"){
+            grupoDetalleAlergias.style.display = "block";
+            detalleAlergias.setAttribute("required","true");
+        }else{
+            grupoDetalleAlergias.style.display = "none";
+            detalleAlergias.removeAttribute("required");
+            detalleAlergias.value = "";
+        }
+    });
+
+    ingresaEquipos.addEventListener("change", ()=>{
+        if(ingresaEquipos.value === "SI"){
+            grupoDetalleEquipos.style.display = "block";
+            detalleEquipos.setAttribute("required","true");
+        }else{
+            grupoDetalleEquipos.style.display = "none";
+            detalleEquipos.removeAttribute("required");
+            detalleEquipos.value = "";
+        }
+    });
+
+    frm.addEventListener('submit', async e=>{
+        e.preventDefault();
+
+        if(!frm.checkValidity()){
+            frm.reportValidity();
+            return;
+        }
+
+        const payload = {
+            fecha: new Date().toISOString(),
+            nombres: nombres.value.trim(),
+            apellidos: apellidos.value.trim(),
+            ocupacion: ocupacion.value.trim(),
+            telefono: telefono.value.trim(),
+            contacto_emergencia: contactoEmergencia.value.trim(),
+            tel_emergencia: telEmergencia.value.trim(),
+            rh: rh.value,
+            eps: eps.value.trim(),
+            arl: arl.value.trim(),
+            area_visita: areaVisita.value.trim(),
+            consume_medicamento: consumeMedicamento.value,
+            detalle_medicamento: detalleMedicamento.value.trim(),
+            tiene_alergias: tieneAlergias.value,
+            detalle_alergias: detalleAlergias.value.trim(),
+            ingresa_equipos: ingresaEquipos.value,
+            detalle_equipos: detalleEquipos.value.trim(),
+            estado: "ACTIVO"
+        };
+
+        try{
+            const id = await save(payload);
+            saveMsg.textContent = "Visitante registrado con ID " + id;
+            saveMsg.style.color = "green";
+            frm.reset();
+
+            grupoDetalleMedicamento.style.display = "none";
+            grupoDetalleAlergias.style.display = "none";
+            grupoDetalleEquipos.style.display = "none";
+
+        }catch(err){
+            saveMsg.textContent = "Error al guardar";
+            saveMsg.style.color = "red";
+        }
+    });
+
+    openDB();
+}
+
 </script>
 
 </body>

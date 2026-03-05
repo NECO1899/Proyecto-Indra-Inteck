@@ -1,0 +1,120 @@
+<div class="modulo-container">
+
+    <h2>Registro Visitantes</h2>
+    <p>Completa la información solicitada. Los campos marcados con * son obligatorios.</p>
+
+    <form id="frmVisitante" class="card-siac" novalidate>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Nombres *</label>
+                <input id="nombres" required>
+            </div>
+
+            <div class="form-group">
+                <label>Apellidos *</label>
+                <input id="apellidos" required>
+            </div>
+
+            <div class="form-group">
+                <label>Ocupación / Cargo *</label>
+                <input id="ocupacion" required>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono *</label>
+                <input id="telefono" required>
+            </div>
+
+            <div class="form-group">
+                <label>Contacto Emergencia *</label>
+                <input id="contactoEmergencia" required>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono Emergencia *</label>
+                <input id="telEmergencia" required>
+            </div>
+
+            <div class="form-group">
+                <label>RH *</label>
+                <select id="rh" required>
+                    <option value="">Selecciona</option>
+                    <option>O+</option><option>O-</option>
+                    <option>A+</option><option>A-</option>
+                    <option>B+</option><option>B-</option>
+                    <option>AB+</option><option>AB-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>EPS *</label>
+                <input id="eps" required>
+            </div>
+
+            <div class="form-group">
+                <label>ARL *</label>
+                <input id="arl" required>
+            </div>
+
+            <div class="form-group">
+                <label>Área a la que visita *</label>
+                <input id="areaVisita" required>
+            </div>
+
+            <div class="form-group">
+                <label>¿Consume medicamentos? *</label>
+                <select id="consumeMedicamento" required>
+                    <option value="">Selecciona</option>
+                    <option value="SI">Sí</option>
+                    <option value="NO">No</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="grupoDetalleMedicamento" style="display:none;">
+                <label>Detalle Medicamentos *</label>
+                <textarea id="detalleMedicamento"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>¿Tiene alergias o enfermedades? *</label>
+                <select id="tieneAlergias" required>
+                    <option value="">Selecciona</option>
+                    <option value="SI">Sí</option>
+                    <option value="NO">No</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="grupoDetalleAlergias" style="display:none;">
+                <label>Detalle Alergias / Enfermedades *</label>
+                <textarea id="detalleAlergias"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>¿Ingresa equipos tecnológicos? *</label>
+                <select id="ingresaEquipos" required>
+                    <option value="">Selecciona</option>
+                    <option value="SI">Sí</option>
+                    <option value="NO">No</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="grupoDetalleEquipos" style="display:none;">
+                <label>Detalle Equipos *</label>
+                <textarea id="detalleEquipos"></textarea>
+            </div>
+
+        </div>
+
+        <div style="margin-top:20px; text-align:right;">
+            <button type="submit" class="btn-siac">
+                Guardar Registro
+            </button>
+        </div>
+
+        <div id="saveMsg" class="muted" style="margin-top:10px;"></div>
+
+    </form>
+
+</div>

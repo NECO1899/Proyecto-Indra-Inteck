@@ -1,0 +1,57 @@
+<div class="modulo-container">
+
+    <h2>Aprobación</h2>
+    <p>Consulta y gestiona solicitudes de salida.</p>
+
+    <!-- BÚSQUEDA -->
+    <div class="card-siac">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>ID de solicitud (opcional)</label>
+                <input id="idCasoAprobacion" type="number" placeholder="Ej: 12">
+            </div>
+
+            <div class="form-group" style="align-self:end;">
+                <button id="btnConsultarAprobacion" class="btn-siac">
+                    Consultar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LISTA -->
+    <div class="card-siac" id="cardListaAprobacion" style="display:none;">
+        <h3>Solicitudes</h3>
+        <div style="overflow-x:auto;">
+            <table class="tabla-siac">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Proyecto</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyAprobacion"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- DETALLE -->
+    <div class="card-siac" id="cardDetalleAprobacion" style="display:none;">
+        <h3>Detalle Solicitud</h3>
+
+        <div id="detalleAprobacion" class="form-grid"></div>
+
+        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btnAprobar" class="btn-siac">
+                Aprobar
+            </button>
+
+            <button id="btnRechazar" class="btn-siac" style="background:#c0392b;">
+                Rechazar
+            </button>
+        </div>
+    </div>
+
+</div>
